@@ -62,6 +62,8 @@ class Enigma2Device(MediaPlayerDevice):
         self._current_program = None
         self._channel_list = []
         self._channel_dict = {}
+        self._statusinfo = None
+        self._update_status = True
 
         try:
             from enigma2_http_api.controller import Enigma2APIController
@@ -97,26 +99,37 @@ class Enigma2Device(MediaPlayerDevice):
     def update(self):
         """Get the latest details from the device."""
         _LOGGER.debug("update()")
+
         try:
-            statusinfo = self.enigma2._apicall('statusinfo')
+            _LOGGER.debug("update(): try")
+            self.enigma2.log.setLevel(logging.CRITICAL)
+            self._statusinfo = self.enigma2._apicall("statusinfo")
         except Exception as e:
             _LOGGER.debug("Exception: %e", e)
-            _LOGGER.debug("Unexpected error: %s", sys.exc_info()[0])
+            if self._update_status:
+                _LOGGER.warn("Lost connection to Enigma2 host")
+                self._update_status = False
             return False
+        else:
+            if not self._update_status:
+                _LOGGER.warn("Restablished connection with Enigma2 host")
+                self._update_status = True
+        finally:
+            self.enigma2.log.setLevel(logging.ERROR)
 
-        self._powerstate = statusinfo['inStandby']
+        self._powerstate = self._statusinfo['inStandby']
 
-        current_channel = 'N/A'
+        self._current_channel = 'N/A'
         if self._powerstate == 'false':
-            if statusinfo['currservice_name'] != 'N/A':
-                if statusinfo['currservice_filename']:
+            if self._statusinfo['currservice_name'] != 'N/A':
+                if self._statusinfo['currservice_filename']:
                     current_channel = 'Recorded'
                 else:
-                    current_channel = statusinfo['currservice_station']
-                current_program = statusinfo['currservice_name']
+                    current_channel = self._statusinfo['currservice_station']
+                current_program = self._statusinfo['currservice_name']
 
-                volcurrent = statusinfo['volume']
-                volmuted = statusinfo['muted']
+                volcurrent = self._statusinfo['volume']
+                volmuted = self._statusinfo['muted']
 
                 self._volume = int(volcurrent) / MAX_VOLUME if volcurrent else None
                 self._muted = (volmuted == 'true') if volmuted else None
@@ -183,7 +196,6 @@ class Enigma2Device(MediaPlayerDevice):
         """Content type of current playing media."""
         _LOGGER.debug("media_content_type()")
         return MEDIA_TYPE_MUSIC
-        return MEDIA_TYPE_CHANNEL
 
     @property
     def source(self):
