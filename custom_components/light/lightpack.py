@@ -194,7 +194,7 @@ class Lightpack(Light):
         else:
             self._available = False
 
-        self._mode = self._update.getMode()
+        self._mode = self._update.getProfile()
         brightness = self._update.getBrightness()
         self._brightness = int(255 * brightness / 100)
         # rgb = self.uodate._sendAndReceivePayload('getcolors').split(';', 1)[0].split(';', 1)[0][2:]
