@@ -204,7 +204,7 @@ class Lightpack(Light):
     def mode_list(self) -> List[str]:
         """Return the list of supported modes."""
         modes = LIGHTPACK_MODE_LIST
-        if self.api_version >= StrictVersion('2.0'):
+        if StrictVersion(self.api_version) >= StrictVersion('2.0'):
             modes = modes | MODE_SOUNDVIZ
         return modes
 
@@ -223,9 +223,10 @@ class Lightpack(Light):
     def supported_features(self) -> int:
         """Flag supported features."""
         features = SUPPORT_LIGHTPACK
-        if self.api_version >= StrictVersion('1.5'):
+        api_version = StrictVersion(self.api_version)
+        if api_version >= StrictVersion('1.5'):
             features = features | SUPPORT_BRIGHTNESS
-        if self.api_version >= StrictVersion('2.2'):
+        if api_version >= StrictVersion('2.2'):
             features = features | SUPPORT_COLOR
         return features
 
@@ -379,7 +380,7 @@ class Lightpack(Light):
             locked = True
         try:
             self._control.setProfile(effect)
-            if self.api_version >= StrictVersion('2.2') and \
+            if StrictVersion(self.api_version) >= StrictVersion('2.2') and \
                     self._control.getPersistence() == 'on':
                 self.unpersist()
         except self.lightpack.CommandFailedError:
@@ -528,9 +529,8 @@ class Lightpack(Light):
             api_version = self._update.getApiVersion()
             if api_version is not None:
                 self._api_version = str(api_version)
-            self._api_version = StrictVersion(str(self._api_version))
-            self._attributes[ATTR_API_VERSION] = str(self.api_version)
-            if self.api_version >= StrictVersion('2.2'):
+            self._attributes[ATTR_API_VERSION] = self.api_version
+            if StrictVersion(self.api_version) >= StrictVersion('2.2'):
                 self._attributes[ATTR_PERSIST] = False
         return self.available
 
