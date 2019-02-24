@@ -6,7 +6,9 @@ import sys
 import voluptuous as vol
 
 from homeassistant.components.media_player import (
-    MEDIA_TYPE_CHANNEL, MEDIA_TYPE_MUSIC, SUPPORT_SELECT_SOURCE, MediaPlayerDevice, PLATFORM_SCHEMA,
+    MediaPlayerDevice, PLATFORM_SCHEMA)
+from homeassistant.components.media_player.const import (
+    MEDIA_TYPE_CHANNEL, MEDIA_TYPE_MUSIC, SUPPORT_SELECT_SOURCE,
     SUPPORT_TURN_OFF, SUPPORT_TURN_ON, SUPPORT_VOLUME_MUTE, SUPPORT_VOLUME_SET)
 from homeassistant.const import (CONF_HOST, STATE_OFF, STATE_ON, STATE_UNKNOWN, CONF_NAME)
 import homeassistant.helpers.config_validation as cv
