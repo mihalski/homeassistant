@@ -24,10 +24,7 @@ from homeassistant.const import (CONF_API_KEY, CONF_HOST, CONF_NAME,
                                  CONF_PORT, EVENT_HOMEASSISTANT_STOP)
 from typing import Tuple, List, Optional
 
-# REQUIREMENTS = ['py-lightpack==2.1.0']
-REQUIREMENTS = ["https://github.com/renemarc/py-lightpack/archive/"
-                "be0138656fc4d118a47570ac40983ef6e76a3862.zip#"
-                "py-lightpack"]
+REQUIREMENTS = ['py-lightpack==2.2.0']
 
 _LOGGER = logging.getLogger(__name__)
 
